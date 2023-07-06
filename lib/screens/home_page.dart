@@ -21,26 +21,25 @@ class _HomePageState extends State<HomePage> {
   Future<List<Products>?> getAllData() async {
     Dio dio = Dio();
     final getAllDataResponse = await dio.get('https://dummyjson.com/products/');
-    final datas = ListProducts.getData(getAllDataResponse.data);
+    final datas = AllData.fromJson(getAllDataResponse.data);
     final allData = datas.products;
     return allData;
   }
 
-  Future<List<Products>?> getDataByCategory() async {
+  getDataByCategory() async {
     Dio dio = Dio();
     final response = await dio.get('https://dummyjson.com/products/categories');
-    final categoryList = response.data;
-    return categoryList;
+    categoryList = response.data;
   }
 
-  //  Future<Products> getDataByCategoryName(String name) async {
-  //   Dio dio = Dio();
-  //   final response =
-  //       await dio.get('https://dummyjson.com/products/categories/$name');
-  //   final categoryByName = ListProducts.getData(response.data);
+  Future<AllData> getDataByCategoryName(String name) async {
+    Dio dio = Dio();
+    final response =
+        await dio.get('https://dummyjson.com/products/category/$name');
+    final categoryByName = AllData.fromJson(response.data);
 
-  //   return categoryByName;
-  // }
+    return categoryByName;
+  }
 
   @override
   void initState() {
@@ -48,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
     getAllData();
     getDataByCategory();
-    setState(() {});
+
     super.initState();
   }
 
@@ -76,39 +75,61 @@ class _HomePageState extends State<HomePage> {
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: [
-              Column(
-                children: categoryList.map((catList) {
-                  return Text(catList);
-                }).toList(),
-              ),
-              FutureBuilder<List<Products>?>(
-                future: getDataByCategory(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Column(
-                        children: snapshot.data!.map((e) {
-                      return Column(
-                        children: [
-                          Text(e.title.toString()),
-                          Consumer<ApiResponse>(
-                            builder: (context, value, child) {
-                              return ElevatedButton(
-                                  onPressed: () {
-                                    value.cartData.add(e);
-                                  },
-                                  child: Text('add to cart'));
-                            },
-                          )
-                        ],
-                      );
-                    }).toList());
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-            ],
+            children: categoryList.map((catList) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      catList,
+                      style: const TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold),
+                    ),
+                    FutureBuilder<AllData>(
+                      future: getDataByCategoryName(catList),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                                children: snapshot.data!.products!.map((e) {
+                              return Card(
+                                margin: EdgeInsets.all(20),
+                                elevation: 10,
+                                shadowColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                color: Colors.grey,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 20),
+                                  child: Column(
+                                    children: [
+                                      Text(e.title.toString()),
+                                      Text(e.discountPercentage.toString()),
+                                      Consumer<ApiResponse>(
+                                        builder: (context, value, child) {
+                                          return ElevatedButton(
+                                              onPressed: () {
+                                                value.cartData.add(e);
+                                              },
+                                              child: Text('add to cart'));
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList()),
+                          );
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ));
   }
