@@ -1,5 +1,6 @@
 import 'package:e_commerce_provider/model/all_products.dart';
-import 'package:e_commerce_provider/model/api_response.dart';
+
+import 'package:e_commerce_provider/model/cart_product.dart';
 import 'package:e_commerce_provider/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_) => AllData()),
           ChangeNotifierProvider(create: (_) => Products()),
-          ChangeNotifierProvider(create: (_) => ApiResponse())
+          ChangeNotifierProvider(create: (_) => CartProduct())
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
