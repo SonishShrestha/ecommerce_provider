@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(CartProduct().cartData);
+    print('object');
     return Scaffold(
         key: scaffoldKey,
         appBar: AppBar(
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                           return SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                                children: snapshot.data!.products!.map((e) {
+                                children: snapshot.data!.products.map((e) {
                               return Card(
                                 margin: EdgeInsets.all(20),
                                 elevation: 10,
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Column(
                                     children: [
                                       Image.network(
-                                        e.images![0],
+                                        e.images[0],
                                         width: 150,
                                         height: 150,
                                       ),
