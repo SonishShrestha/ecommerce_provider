@@ -53,8 +53,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  int _counter = 0;
-
   @override
   Widget build(BuildContext context) {
     print('object');
@@ -67,14 +65,14 @@ class _HomePageState extends State<HomePage> {
           child: Drawer(
             child: Column(
               children: [
-                Consumer<CartProduct>(
+                Consumer<CartProductList>(
                   builder: (context, value, child) {
                     return Column(
                         children: value.cartData.map((e) {
                       return Column(
                         children: [
-                          Text(e.title.toString()),
-                          Text(value.quantity.toString())
+                          Text(e.cartProducts.title),
+                          Text(e.quantity.toString())
                         ],
                       );
                     }).toList());
@@ -122,23 +120,25 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       Text(e.title.toString()),
                                       Text(e.discountPercentage.toString()),
-                                      Consumer<CartProduct>(
-                                        builder: (context, value, child) {
-                                          return ElevatedButton(
-                                              onPressed: () {
-                                                final data = value.cartData
-                                                    .where((element) =>
-                                                        element.id == e.id);
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            final cartDatas =
+                                                Provider.of<CartProductList>(
+                                                    context,
+                                                    listen: false);
+                                            final data = cartDatas.cartData
+                                                .where((element) =>
+                                                    element.cartProducts.id ==
+                                                    e.id);
 
-                                                if (data.isEmpty) {
-                                                  value.cartData.add(e);
-                                                } else {
-                                                  value.quantity;
-                                                }
-                                              },
-                                              child: Text('add to cart'));
-                                        },
-                                      )
+                                            if (data.isEmpty) {
+                                              cartDatas.cartData
+                                                  .add(CartProduct(1, e));
+                                            } else {
+                                              data.first.quantity++;
+                                            }
+                                          },
+                                          child: Text('add to cart'))
                                     ],
                                   ),
                                 ),
