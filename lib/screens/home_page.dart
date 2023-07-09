@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:e_commerce_provider/model/all_products.dart';
 
@@ -65,14 +63,36 @@ class _HomePageState extends State<HomePage> {
           child: Drawer(
             child: Column(
               children: [
-                Consumer<CartProductList>(
+                Consumer<CartProduct>(
                   builder: (context, value, child) {
                     return Column(
                         children: value.cartData.map((e) {
                       return Column(
                         children: [
-                          Text(e.cartProducts.title),
-                          Text(e.quantity.toString())
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(e.cartProducts!.images[0])),
+                              title: Text(e.cartProducts!.title),
+                              subtitle: Row(
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        e.quantiyDecrement();
+                                      },
+                                      icon: Icon(Icons.remove)),
+                                  Text(e.quantity.toString()),
+                                  IconButton(
+                                      onPressed: () {
+                                        e.quantityIncrement();
+                                      },
+                                      icon: Icon(Icons.add)),
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       );
                     }).toList());
@@ -123,19 +143,19 @@ class _HomePageState extends State<HomePage> {
                                       ElevatedButton(
                                           onPressed: () {
                                             final cartDatas =
-                                                Provider.of<CartProductList>(
+                                                Provider.of<CartProduct>(
                                                     context,
                                                     listen: false);
                                             final data = cartDatas.cartData
                                                 .where((element) =>
-                                                    element.cartProducts.id ==
+                                                    element.cartProducts!.id ==
                                                     e.id);
 
                                             if (data.isEmpty) {
-                                              cartDatas.cartData
-                                                  .add(CartProduct(1, e));
+                                              cartDatas.cartData.add(
+                                                  CartProduct(cartProducts: e));
                                             } else {
-                                              data.first.quantity++;
+                                              data.first.quantityIncrement();
                                             }
                                           },
                                           child: Text('add to cart'))
