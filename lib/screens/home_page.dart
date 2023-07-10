@@ -139,7 +139,8 @@ class _HomePageState extends State<HomePage> {
                                         height: 150,
                                       ),
                                       Text(e.title.toString()),
-                                      Text(e.discountPercentage.toString()),
+                                      Text(
+                                          '${e.discountPercentage.toString()}\$'),
                                       ElevatedButton(
                                           onPressed: () {
                                             final cartDatas =
