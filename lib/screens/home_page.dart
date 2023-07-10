@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:e_commerce_provider/model/all_products.dart';
 
 import 'package:e_commerce_provider/model/cart_product.dart';
+import 'package:e_commerce_provider/screens/drawer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Products> allData = [];
-  List categoryList = [];
 
   Future<List<Products>?> getAllData() async {
     Dio dio = Dio();
@@ -22,12 +22,6 @@ class _HomePageState extends State<HomePage> {
     final datas = AllData.fromJson(getAllDataResponse.data);
     final allData = datas.products;
     return allData;
-  }
-
-  getDataByCategory() async {
-    Dio dio = Dio();
-    final response = await dio.get('https://dummyjson.com/products/categories');
-    categoryList = response.data;
   }
 
   Future<AllData> getDataByCategoryName(String name) async {
@@ -44,15 +38,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-
-    getAllData();
-    getDataByCategory();
+    context.read<CartProduct>().getDataByCategory();
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final categoryListt = context.read<CartProduct>().categoryList;
     print('object');
     return Scaffold(
         key: scaffoldKey,
@@ -60,51 +53,11 @@ class _HomePageState extends State<HomePage> {
           title: Text('HomePages'),
         ),
         endDrawer: SafeArea(
-          child: Drawer(
-            child: Column(
-              children: [
-                Consumer<CartProduct>(
-                  builder: (context, value, child) {
-                    return Column(
-                        children: value.cartData.map((e) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(e.cartProducts!.images[0])),
-                              title: Text(e.cartProducts!.title),
-                              subtitle: Row(
-                                children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        e.quantiyDecrement();
-                                      },
-                                      icon: Icon(Icons.remove)),
-                                  Text(e.quantity.toString()),
-                                  IconButton(
-                                      onPressed: () {
-                                        e.quantityIncrement();
-                                      },
-                                      icon: Icon(Icons.add)),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    }).toList());
-                  },
-                )
-              ],
-            ),
-          ),
+          child: Drawer(child: MyWidget()),
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: categoryList.map((catList) {
+            children: categoryListt.map((catList) {
               return SingleChildScrollView(
                 child: Column(
                   children: [
